@@ -1,0 +1,21 @@
+name = "cf-assistant-worker"
+main = "src/index.js"
+compatibility_date = "2023-10-25"
+
+route = { pattern = "cocktail-rag.beefie.xyz", custom_domain = true }
+
+[site]
+bucket = "./public"
+
+[ai]
+binding = "AI"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "recipe-store"
+database_id = "1f8cad45-bd08-4d1b-ae78-d124e4e2df7f"
+
+[[vectorize]]
+binding = "VECTOR_INDEX"
+index_name = "vector-index"
+

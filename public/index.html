@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Cocktail Chatbot</title>
+		<style>
+            html {
+                height: 100%;
+                width: 100%;
+                position: fixed;
+            }
+
+			body {
+				font-family: 'Arial', sans-serif;
+				background-color: #f4f7f6;
+				margin: 0;
+				padding: 0;
+				display: flex;
+				justify-content: center;
+				align-items: center;
+                height: 100%;
+				color: #444;
+			}
+
+			#chat-container {
+				background-color: white;
+				width: 95%;
+				max-width: 600px;
+				margin: auto; 
+				border-radius: 20px;
+				box-shadow: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23);
+				overflow: hidden;
+				display: flex;
+				flex-direction: column;
+			}
+
+			#chat-interface {
+				position: relative;
+				padding: 20px;
+			}
+			#user-input {
+				width: calc(100% - 60px);
+				padding: 10px;
+				border: 1px solid #ddd;
+				border-radius: 20px;
+				font-size: 16px;
+				outline: none;
+				box-sizing: border-box;
+			}
+			#send-button {
+				width: 40px;
+				height: 40px;
+				padding: 0;
+				margin: 0;
+				border: none;
+				background: linear-gradient(45deg, #5cb85c, #359f43);
+				color: white;
+				cursor: pointer;
+				border-radius: 50%;
+				font-size: 16px;
+				position: absolute;
+				right: 20px;
+				top: 50%;
+				transform: translateY(-50%);
+				box-shadow: 0 2px 2px rgba(0, 0, 0, 0.2);
+				transition: background 0.3s ease;
+			}
+			#send-button:hover {
+				background: linear-gradient(45deg, #40ae4f, #359f43);
+			}
+			#response-container {
+				position: relative;
+				background-color: #e8e8e8;
+				padding: 20px;
+				font-size: 16px;
+				height: 350px;
+				overflow-y: auto;
+			}
+
+			#answer-container {
+				transition: opacity 0.5s ease;
+			}
+
+			.loader-wrapper {
+				display: flex;
+				justify-content: center;
+				align-items: center;
+				position: absolute;
+				width: 100%;
+				height: 100%;
+				background-color: #e8e8e8;
+				top: 0;
+				left: 0;
+				z-index: 2;
+				opacity: 0;
+				visibility: hidden;
+				transition: visibility 0s, opacity 0.5s linear;
+			}
+
+			.loader-wrapper.show {
+				opacity: 1;
+				visibility: visible;
+				transition: opacity 0.5s linear;
+			}
+
+			.loading-animation {
+				display: inline-block;
+				width: 40px; 
+				height: 40px;
+				border: 3px solid rgba(0, 0, 0, 0.1);
+				border-top-color: #3498db;
+				border-radius: 50%;
+				animation: spin 1s linear infinite;
+			}
+
+			@keyframes spin {
+				0% {
+					transform: rotate(0deg);
+				}
+				100% {
+					transform: rotate(360deg);
+				}
+			}
+
+			@media (max-width: 600px) {
+				#chat-container {
+					max-width: 100%;
+				}
+
+                #response-container {
+                    height: 100%;
+                }
+
+				#chat-interface {
+					flex-wrap: wrap;
+				}
+
+				#send-button {
+					margin-left: 10px;
+					width: 50px;
+					height: 50px;
+				}
+
+				#chat-container {
+					height: 95vh;
+				}
+			}
+		</style>
+	</head>
+	<body>
+		<div id="chat-container">
+			<div id="response-container">
+				<div class="loader-wrapper">
+					<div id="loading" class="loading-animation"></div>
+				</div>
+				<div id="answer-container">Your cocktail answers will appear here...</div>
+			</div>
+			<div id="chat-interface">
+				<input type="text" id="user-input" placeholder="Ask about cocktails..." autofocus />
+				<button id="send-button">&#10148;</button>
+			</div>
+		</div>
+
+		<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+		<script>
+            function setVh() {
+                document.getElementById("chat-container").style.height = (window.innerHeight * 0.95) + 'px';
+            }
+
+            window.addEventListener('resize', () => {
+                setVh();
+            });
+
+            setVh();
+
+			// Function to handle sending the message
+			function sendMessage(query) {
+				const loaderWrapper = document.querySelector('.loader-wrapper');
+				const answerContainer = document.getElementById('answer-container');
+
+				loaderWrapper.classList.add('show');
+
+				answerContainer.style.opacity = 0;
+				answerContainer.textContent = '';
+
+				const apiUrl = `/api/chat?query=${encodeURIComponent(query)}`;
+				fetch(apiUrl)
+					.then((response) => response.json())
+					.then((data) => {
+						setTimeout(() => {
+							loaderWrapper.classList.remove('show');
+							displayResponse(data);
+							answerContainer.style.opacity = 1;
+						}, 500);
+					})
+					.catch((error) => {
+						console.error('Error:', error);
+						loaderWrapper.classList.remove('show');
+						displayResponse({ error: 'Sorry, something went wrong.' });
+						answerContainer.style.opacity = 1;
+					});
+			}
+
+			// Function to display the response
+			function displayResponse(data) {
+				const answerContainer = document.getElementById('answer-container');
+				if (data.error) {
+					answerContainer.textContent = data.error;
+				} else {
+                    // Response is markdown, format to HTML.
+					answerContainer.innerHTML = marked.parse(data.response);
+				}
+			}
+
+			// Event listener for the send button
+			document.getElementById('send-button').addEventListener('click', () => {
+				const userInput = document.getElementById('user-input').value;
+				if (userInput.trim()) {
+					sendMessage(userInput);
+					document.getElementById('user-input').value = '';
+				}
+			});
+
+			// Event listener for pressing "Enter" key
+			document.getElementById('user-input').addEventListener('keypress', (e) => {
+				if (e.key === 'Enter') {
+					const userInput = document.getElementById('user-input').value;
+					if (userInput.trim()) {
+						sendMessage(userInput);
+						document.getElementById('user-input').value = '';
+					}
+				}
+			});
+		</script>
+	</body>
+</html>
