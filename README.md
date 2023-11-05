@@ -2,7 +2,7 @@
 
 This repository contains a Cloudflare Worker implementation for a RAG (Retrieval Augmented Generation) Chatbot API, which leverages Cloudflare's D1 Database for document storage, Vectorize for vector indexing and Workers AI for modelling.
 
-[See the full Medium article here!](https://medium.com/p/3a2b39f8e4e1/edit)
+[See the full Medium article here!](https://medium.com/@calebrocca/llama-2-rag-chatbot-with-cloudflare-workers-ai-3a2b39f8e4e1)
 
 ## Setup Guide
 
@@ -77,7 +77,7 @@ The `cocktail-recipes.py` script uploads content from a Hugging Face dataset to 
 ## Usage
 To generate a response based on the query, use the HTTP API endpoint:
 ```
-GET https://ai-assistant.beefie.xyz/test/chat?query=Name some cocktails with a salted rim on the glass
+GET https://ai-assistant.beefie.xyz/api/chat?query=Name some cocktails with a salted rim on the glass
 ----------
 Certainly! Here are some cocktails that typically have a salted rim on the glass:
 1. Old Fashioned: This classic cocktail is made with bourbon or rye whiskey, sugar, bitters, and a twist of citrus peel. A salted rim adds a savory element to the drink.
@@ -86,3 +86,7 @@ Certainly! Here are some cocktails that typically have a salted rim on the glass
 4. Mojito: A refreshing cocktail made with rum, lime juice, mint leaves, and a splash of soda water. A salted rim adds a savory element to the drink.
 5. Cosmopolitan: A fruity cocktail made with vodka, triple sec, cranberry juice, and
 ```
+
+The chat interface can be accessed at /index.html.
+
+![Chat interface](https://cdn-images-1.medium.com/max/800/1*Pqlmp_7q1vmhpC79ZxDWyg.gif)
