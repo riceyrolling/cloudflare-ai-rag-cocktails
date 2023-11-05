@@ -164,15 +164,19 @@
 
 		<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 		<script>
-            function setVh() {
-                document.getElementById("chat-container").style.height = (window.innerHeight * 0.95) + 'px';
+            function setMobileVh() {
+                if (window.innerWidth <= 600) {
+                    document.getElementById("chat-container").style.height = (window.innerHeight * 0.95) + 'px';
+                } else {
+                    document.getElementById("chat-container").style.height = 'auto';
+                }
             }
 
             window.addEventListener('resize', () => {
-                setVh();
+                setMobileVh();
             });
 
-            setVh();
+            setMobileVh();
 
 			// Function to handle sending the message
 			function sendMessage(query) {
